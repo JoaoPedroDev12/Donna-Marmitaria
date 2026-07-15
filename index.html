@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donna Marmitaria — Cardápio Digital</title>
+    <style>
+        :root {
+            --primary: #e63946;
+            --dark: #1d3557;
+            --light: #f8f9fa;
+            --success: #25d366;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            padding-bottom: 80px;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .category-title {
+            margin: 20px 0 10px;
+            font-size: 1.2rem;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .product-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .product-info p {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .price {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .btn-add {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn-add:hover {
+            background-color: #c92a36;
+        }
+
+        /* Carrinho Flutuante */
+        .cart-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--dark);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.15);
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        .cart-bar span {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-badge {
+            background-color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+
+        /* Modal do Carrinho */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 200;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 600px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 20px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .close-btn {
+            font-size: 1.5rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-item-actions button {
+            background: #ddd;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-top: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .btn-send {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Donna Marmitaria ♡</h1>
+        <p>Comida Caseira & Sabor de Verdade</p>
+        <p>⏱ Aberto de Segunda a Sábado — 11h às 14h</p>
+    </header>
+
+    <div class="container">
+        <!-- Categoria: Marmitas -->
+        <h2 class="category-title">Marmitas do Dia</h2>
+        
+        <div class="product-card">
+            <div class="product-info">
+                <h3>Marmita Clássica (M)</h3>
+                <p>Arroz, feijão, proteína do dia e 2 acompanhamentos.</p>
+                <span class="price">R$ 22,00</span>
+            </div>
+            <button class="btn-add" onclick="addToCart('Marmita Clássica (M)', 22.00)">Adicionar</button>
+        </div>
+
+        <div class="product-card">
+            <div class="product-info">
+                <h3>Marmita Generosa (G)</h3>
+                <p>Para quem tem muita fome. Escolha até 2 proteínas.</p>
+                <span class="price">R$ 27,00</span>
+            </div>
+            <button class="btn-add" onclick="addToCart('Marmita Generosa (G)', 27.00)">Adicionar</button>
+        </div>
+
+        <!-- Categoria: Bebidas -->
+        <h2 class="category-title">Bebidas</h2>
+
+        <div class="product-card">
+            <div class="product-info">
+                <h3>Refrigerante Lata</h3>
+                <p>Coca-Cola, Guaraná Antártica ou Sprite.</p>
+                <span class="price">R$ 6,00</span>
+            </div>
+            <button class="btn-add" onclick="addToCart('Refrigerante Lata', 6.00)">Adicionar</button>
+        </div>
+
+        <div class="product-card">
+            <div class="product-info">
+                <h3>Suco Natural 300ml</h3>
+                <p>Laranja ou Limão feito na hora.</p>
+                <span class="price">R$ 8,00</span>
+            </div>
+            <button class="btn-add" onclick="addToCart('Suco Natural 300ml', 8.00)">Adicionar</button>
+        </div>
+    </div>
+
+    <!-- Barra do Carrinho Flutuante -->
+    <div class="cart-bar" id="cart-bar" style="display: none;" onclick="toggleModal(true)">
+        <span>Ver Sacola <span class="cart-badge" id="cart-count">0</span></span>
+        <span id="cart-total">R$ 0,00</span>
+    </div>
+
+    <!-- Modal do Carrinho -->
+    <div class="modal" id="cart-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Seu Pedido</h2>
+                <button class="close-btn" onclick="toggleModal(false)">&times;</button>
+            </div>
+
+            <div id="cart-items-container">
+                <!-- Itens serão injetados aqui -->
+            </div>
+
+            <div class="form-group">
+                <label for="client-name">Seu Nome:</label>
+                <input type="text" id="client-name" placeholder="Ex: Maria Silva" required>
+            </div>
+
+            <div class="form-group">
+                <label for="delivery-address">Endereço de Entrega:</label>
+                <input type="text" id="delivery-address" placeholder="Rua, Número e Bairro" required>
+            </div>
+
+            <div class="form-group">
+                <label for="payment-method">Forma de Pagamento:</label>
+                <select id="payment-method">
+                    <option value="Pix">Pix</option>
+                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                </select>
+            </div>
+
+            <button class="btn-send" onclick="sendToWhatsApp()">
+                Enviar Pedido via WhatsApp 💬
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        const whatsappNumber = "5519987340673"; // Substitua pelo número da Donna Marmitaria (com DDI e DDD)
+
+        function addToCart(name, price) {
+            const existingItem = cart.find(item => item.name === name);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ name, price, quantity: 1 });
+            }
+            updateCart();
+        }
+
+        function changeQuantity(name, amount) {
+            const itemIndex = cart.findIndex(item => item.name === name);
+            if (itemIndex > -1) {
+                cart[itemIndex].quantity += amount;
+                if (cart[itemIndex].quantity <= 0) {
+                    cart.splice(itemIndex, 1);
+                }
+            }
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartBar = document.getElementById('cart-bar');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotal = document.getElementById('cart-total');
+            const container = document.getElementById('cart-items-container');
+
+            if (cart.length === 0) {
+                cartBar.style.display = 'none';
+                toggleModal(false);
+                return;
+            }
+
+            cartBar.style.display = 'flex';
+            
+            let totalItems = 0;
+            let totalPrice = 0;
+            container.innerHTML = '';
+
+            cart.forEach(item => {
+                totalItems += item.quantity;
+                totalPrice += item.price * item.quantity;
+
+                container.innerHTML += `
+                    <div class="cart-item">
+                        <div>
+                            <strong>${item.name}</strong><br>
+                            <span style="color: var(--primary);">R$ ${(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                        <div class="cart-item-actions">
+                            <button onclick="changeQuantity('${item.name}', -1)">-</button>
+                            <span>${item.quantity}</span>
+                            <button onclick="changeQuantity('${item.name}', 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            cartCount.innerText = totalItems;
+            cartTotal.innerText = `R$ ${totalPrice.toFixed(2)}`;
+        }
+
+        function toggleModal(show) {
+            const modal = document.getElementById('cart-modal');
+            modal.style.display = show ? 'flex' : 'none';
+        }
+
+        function sendToWhatsApp() {
+            const name = document.getElementById('client-name').value;
+            const address = document.getElementById('delivery-address').value;
+            const payment = document.getElementById('payment-method').value;
+
+            if (!name || !address) {
+                alert("Por favor, preencha seu nome e endereço de entrega!");
+                return;
+            }
+
+            let text = `*NOVO PEDIDO - DONNA MARMITARIA* 🍛\n\n`;
+            text += `*Cliente:* ${name}\n`;
+            text += `*Endereço:* ${address}\n`;
+            text += `*Pagamento:* ${payment}\n\n`;
+            text += `*Itens do Pedido:*\n`;
+
+            let total = 0;
+            cart.forEach(item => {
+                text += `- ${item.quantity}x ${item.name} (R$ ${(item.price * item.quantity).toFixed(2)})\n`;
+                total += item.price * item.quantity;
+            });
+
+            text += `\n*Total:* R$ ${total.toFixed(2)}`;
+
+            const encodedText = encodeURIComponent(text);
+            const url = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedText}`;
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
